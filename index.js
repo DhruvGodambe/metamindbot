@@ -2,6 +2,7 @@ const express = require("express")
 const { Configuration, OpenAIApi } = require("openai");
 const TelegramBot = require('node-telegram-bot-api');
 const app = express();
+const basic = require("./api/basic");
 
 const PORT = process.env.PORT || 4000;
 const openai_secret = "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";
@@ -30,6 +31,10 @@ bot.on('message', async (msg) => {
   }
 
 });
+
+app.use(express.json({extended: false}))
+
+app.use("/api/basic", basic);
 
 app.get("/", async function(req, res) {
 
