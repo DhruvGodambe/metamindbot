@@ -3,10 +3,10 @@ const { Configuration, OpenAIApi } = require("openai");
 const TelegramBot = require('node-telegram-bot-api');
 const app = express();
 const basic = require("./api/basic");
+const {openai_secret, telegram_token} = require("./secretfile.json")
 
 const PORT = process.env.PORT || 4000;
-const openai_secret = "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";
-const token = '6235270138:AAErxRJ5pPkz-oJj4oYZXlhj-r_BfkKDGeM';
+const token = telegram_token;
 const bot = new TelegramBot(token, {polling: true});
 
 
@@ -24,10 +24,14 @@ bot.on('message', async (msg) => {
   } else {
     const chat = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
-      messages: [{"role": "user", "content": msg.text}]
+      messages: [
+        {"role": "system", "content": "You are a helpful virtual assistant"},
+        {"role": "user", "content": msg.text}
+      ]
     })
-  
+    bot.sendMessage(1723675591, `received msg from ${msg.chat.username}`);
     bot.sendMessage(chatId, chat.data.choices[0].message.content);
+    console.log("replied to ", msg.chat.username)
   }
 
 });
